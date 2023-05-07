@@ -2,8 +2,8 @@
 
 **Bugs**
 
-- Bug 10: Department ID might be uneasy to use client-wise so change it with Department Name
-- Bug 20: When deleting an employee first check if his id exists
+- Bug 10: Changed regular functions to arrow functions
+- Bug 20: Code Refactoring - SQL Query refactoring
 
 **Tasks for Today 07/05**
 
@@ -17,6 +17,7 @@
 - Story 20: Create all the appropriate SQL scripts for Emp and Dep Tables
 - Task: Design the Employee and the Department CRUD APIs
 - Story 30: Create the Employee CRUD API
+- Story 40: Make sure the user is authenticated to do a specific action
 
 **Tasks for Today 05/05**
 

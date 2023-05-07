@@ -14,6 +14,7 @@ router.post("/", function (req, res) {
     } else {
       if (isAuthenticated) {
         const token = jwt.createToken(username);
+        console.log(token);
         jwt.storeToken(username, token, function (err, isStored) {
           if (err) {
             console.log(err);

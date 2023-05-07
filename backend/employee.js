@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("./auth");
 const pg = require("pg");
 
 const pool = new pg.Pool({
@@ -11,7 +12,7 @@ const pool = new pg.Pool({
 });
 
 // CREATE
-router.post("/", async (req, res) => {
+router.post("/", auth.authenticateToken, async (req, res) => {
   const { name, surname, uin_number, department_id } = req.body;
   try {
     const emp_result = await pool.query(
@@ -19,7 +20,6 @@ router.post("/", async (req, res) => {
       [name, surname, uin_number, department_id]
     );
     const new_emp_id = emp_result.rows[0].id;
-    console.log(new_emp_id);
     const empdep_result = await pool.query(
       "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
       [new_emp_id, department_id]
@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
 });
 
 // READ ALL USERS
-router.get("/", async (req, res) => {
+router.get("/", auth.authenticateToken, async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM employee");
     res.json(result.rows);
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
 });
 
 // READ ONE USER
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
   try {
     const result = await pool.query("SELECT * FROM employee WHERE id =  " + id);
@@ -55,7 +55,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth.authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { name, surname, uin_number, department_id } = req.body;
 
@@ -72,15 +72,19 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
 
   try {
     await pool.query(
       "DELETE FROM employee_department WHERE employee_id = " + id
     );
-    await pool.query("DELETE FROM employee WHERE id = " + id);
-    res.send("Employee deleted");
+    const result = await pool.query("DELETE FROM employee WHERE id = " + id);
+    if (result.rowCount === 0) {
+      res.send("No User with id: " + id);
+    } else {
+      res.send("User Deleted");
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");

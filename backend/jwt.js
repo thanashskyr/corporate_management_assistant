@@ -19,35 +19,36 @@ pool
     console.log("Error connecting to database: ", error);
   });
 
-function createToken(username) {
+const createToken = (username) => {
   const payload = {
     username: username,
   };
-  const secret = "your_secret_key";
+  const secret = process.env.JWT_SECRET;
   const options = {
     expiresIn: "24h",
   };
   return jwt.sign(payload, secret, options);
-}
+};
 
-function verifyToken(token, callback) {
-  const secret = "your_secret_key";
-  jwt.verify(token, secret, function (err, decoded) {
-    if (err) {
-      callback(err, null);
-    } else {
-      callback(null, decoded.username);
-    }
-  });
-}
+const verifyToken = (token, callback) => {
+  const secret = process.env.JWT_SECRET;
 
-function storeToken(username, token, callback) {
+  try {
+    const decoded = jwt.verify(token, secret);
+    callback(null, decoded.username);
+  } catch (err) {
+    console.error(err);
+    callback(err, null);
+  }
+};
+
+const storeToken = (username, token, callback) => {
   const sql = format(
     "INSERT INTO tokens (username, token) VALUES (%L, %L)",
     username,
     token
   );
-  pool.query(sql, function (err, result) {
+  pool.query(sql, (err, result) => {
     if (err) {
       console.log(err);
       callback(err, null);
@@ -55,7 +56,7 @@ function storeToken(username, token, callback) {
       callback(null, true);
     }
   });
-}
+};
 
 module.exports = {
   createToken,
