@@ -1,5 +1,10 @@
 ## **Corporate Application - Scrum - ToDo list**
 
+**Bugs**
+
+- Bug 10: Department ID might be uneasy to use client-wise so change it with Department Name
+- Bug 20: When deleting an employee first check if his id exists
+
 **Tasks for Today 07/05**
 
 - Story 10: Complete the user /login API using POSTMAN
@@ -11,6 +16,7 @@
   - Relation between them
 - Story 20: Create all the appropriate SQL scripts for Emp and Dep Tables
 - Task: Design the Employee and the Department CRUD APIs
+- Story 30: Create the Employee CRUD API
 
 **Tasks for Today 05/05**
 
