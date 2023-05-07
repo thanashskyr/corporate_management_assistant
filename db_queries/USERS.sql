@@ -1,6 +1,14 @@
 Database: CorpApplication
 
+-- SQL queries to DROP all DB tables needed so far
+
 DROP DATABASE IF EXISTS "CorpApplication";
+DROP TABLE tokens;
+DROP TABLE Department CASCADE;
+DROP TABLE Employee CASCADE;
+DROP TABLE Employee_Department CASCADE;
+
+-- SQL queries to CREATE all DB tables needed so far
 
 CREATE DATABASE "CorpApplication"
     WITH
@@ -21,8 +29,6 @@ CREATE TABLE USERS (
   PASSWORD VARCHAR(255)
 );
 
-DROP TABLE tokens;
-
 
 CREATE TABLE tokens (
   id SERIAL PRIMARY KEY,
@@ -31,26 +37,6 @@ CREATE TABLE tokens (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expires_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL '24 hours')
 );
-
-INSERT INTO USERS (NAME, SIRNAME, UIN, USERNAME, PASSWORD)
-VALUES 
-  ('Thita', 'Kapa', '00000000', 'thita', 'passkapa'),
-  ('Alpha', 'Vita', '11111111', 'alpha', 'passvita'),
-  ('Gama', 'Delta', '22222222', 'gama', 'passdelta'),
-  ('Ypsilon', 'Zhta', '33333333', 'ypsilon', 'passzhta'),
-  ('Htta', 'Thita', '44444444', 'htta', 'passthita');
-
-
-SELECT * FROM TOKENS;
-
-
--- Departments and Employees
-
-DROP TABLE Department CASCADE;
-DROP TABLE Employee CASCADE;
-DROP TABLE Employee_Department CASCADE;
-
-
 
 CREATE TABLE department (
   id SERIAL PRIMARY KEY,
@@ -71,6 +57,21 @@ CREATE TABLE employee_department (
   PRIMARY KEY (employee_id, department_id)
 );
 
+-- Following INSERT used to manually inject USERS 
+
+INSERT INTO USERS (NAME, SIRNAME, UIN, USERNAME, PASSWORD)
+VALUES 
+  ('Thita', 'Kapa', '00000000', 'thita', 'passkapa'),
+  ('Alpha', 'Vita', '11111111', 'alpha', 'passvita'),
+  ('Gama', 'Delta', '22222222', 'gama', 'passdelta'),
+  ('Ypsilon', 'Zhta', '33333333', 'ypsilon', 'passzhta'),
+  ('Htta', 'Thita', '44444444', 'htta', 'passthita');
+
+
+
+
+
+-- Testing: SQL Queries to INSERT to Tables
 INSERT INTO department (name) VALUES ('IT');
 INSERT INTO department (name) VALUES ('Sales');
 INSERT INTO department (name) VALUES ('HR');
@@ -89,8 +90,8 @@ INSERT INTO employee_department (employee_id, department_id) VALUES (2, 2);
 INSERT INTO employee_department (employee_id, department_id) VALUES (2, 1);
 INSERT INTO employee_department (employee_id, department_id) VALUES (3, 3);
 
-
-
+-- Testing: SQL Queries to SELECT to Tables
+SELECT * FROM TOKENS;
 select * from employee;
 select * from department;
 select * from employee_department;
