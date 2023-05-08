@@ -6,9 +6,11 @@ app.use(bodyParser.json());
 
 const loginRouter = require("./login");
 const employeeRouter = require("./employee");
+const departmentRouter = require("./department");
 
 app.use("/login", loginRouter);
 app.use("/emp", employeeRouter);
+app.use("/dep", departmentRouter);
 
 app.listen(3000, function () {
   console.log("Example app listening on port 3000!");
