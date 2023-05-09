@@ -6,7 +6,7 @@ const pool = new pg.Pool({
   user: "postgres",
   host: "localhost",
   database: "CorpApplication",
-  password: "linux",
+  password: "postgres",
   port: 5432,
 });
 
@@ -24,6 +24,7 @@ const createToken = (username) => {
     username: username,
   };
   const secret = process.env.JWT_SECRET;
+  console.log(secret);
   const options = {
     expiresIn: "24h",
   };
