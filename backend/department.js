@@ -61,8 +61,8 @@ router.put("/:id", auth.authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      "UPDATE employee SET name = $1, surname = $2, uin_number = $3, department_id= $4 WHERE id = $5 RETURNING *",
-      [name, surname, uin_number, department_id, id]
+      "UPDATE department SET name = $1 WHERE id = $2 RETURNING *",
+      [name, id]
     );
     res.json(result.rows[0]);
   } catch (err) {

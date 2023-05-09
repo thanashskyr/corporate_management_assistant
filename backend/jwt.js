@@ -24,6 +24,7 @@ const createToken = (username) => {
     username: username,
   };
   const secret = process.env.JWT_SECRET;
+  console.log(secret);
   const options = {
     expiresIn: "24h",
   };
