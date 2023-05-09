@@ -42,12 +42,12 @@ router.get("/", auth.authenticateToken, async (req, res) => {
   }
 });
 
-// READ ONE DEPARTMENT ???????? needs to give a departments name an return deepartments id and all the employees working there
-router.get("/:id", auth.authenticateToken, async (req, res) => {
+// READ ONE DEPARTMENT
+router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
   try {
-    const result = await pool.query("SELECT * FROM department WHERE id =  " + id);
-    res.json(result.rows[0]);
+    const result = await pool.query("SELECT * FROM employee WHERE department_id = " + id);
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
