@@ -14,21 +14,30 @@ const pool = new pg.Pool({
 // CREATE
 router.post("/", auth.authenticateToken, async (req, res) => {
   const { name, surname, uin_number, department_id } = req.body;
-  try {
-    const emp_result = await pool.query(
-      "INSERT INTO employee (name, surname, uin_number, department_id) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, surname, uin_number, department_id]
-    );
-    const new_emp_id = emp_result.rows[0].id;
-    const empdep_result = await pool.query(
-      "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
-      [new_emp_id, department_id]
-    );
-    res.send("Employee added succesfully");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
+
+  const exists = await pool.query("SELECT * FROM employee WHERE name = ($1) AND surname = ($2)", [name, surname]);
+  if (exists.rows.length == 0 )
+  {
+
+      try {
+        const emp_result = await pool.query(
+          "INSERT INTO employee (name, surname, uin_number, department_id) VALUES ($1, $2, $3, $4) RETURNING *",
+          [name, surname, uin_number, department_id]
+        );
+        const new_emp_id = emp_result.rows[0].id;
+        const empdep_result = await pool.query(
+          "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
+          [new_emp_id, department_id]
+        );
+        res.send("Employee added succesfully");
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+      }
+  }else{
+    res.send("employee already exists");
   }
+
 });
 
 // READ ALL USERS
