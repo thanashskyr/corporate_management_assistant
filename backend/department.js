@@ -13,24 +13,35 @@ const pool = new pg.Pool({
 
 // CREATE
 router.post("/", auth.authenticateToken, async (req, res) => {
-  const { name } = req.body;
-  try {
-    const emp_result = await pool.query(
-      "INSERT INTO department (name) VALUES ($1) RETURNING *",
-      [name]
-    );
-    const new_dep_id = emp_result.rows[0].id;
-    // const empdep_result = await pool.query(
-    //   "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
-    //   [new_emp_id, department_id]
-    // );
-    res.send("department added succesfully");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-});
+  const { name }  = req.body;
 
+  const exists = await pool.query("SELECT * FROM department WHERE name = ($1)", [name]);
+  if (exists.rows.length == 0 )
+  {
+
+
+      try {
+        const emp_result = await pool.query(
+          "INSERT INTO department (name) VALUES ($1) RETURNING *",
+          [name]
+        );
+        const new_dep_id = emp_result.rows[0].id;
+        // const empdep_result = await pool.query(
+        //   "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
+        //   [new_emp_id, department_id]
+        // );
+        res.send("department added succesfully");
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+      }
+
+
+  }else{
+    res.send("department allready exists");
+  }
+
+});
 // READ ALL DEPARTMENTS
 router.get("/", auth.authenticateToken, async (req, res) => {
   try {
@@ -42,7 +53,7 @@ router.get("/", auth.authenticateToken, async (req, res) => {
   }
 });
 
-// READ ONE DEPARTMENT ???????? needs to give a departments name an return deepartments id and all the employees working there
+// READ ONE DEPARTMENT
 router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
   try {
@@ -54,7 +65,7 @@ router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
   }
 });
 
-// UPDATE ???? needs to be able to change the employees that work an a specific department 
+// UPDATE 
 router.put("/:id", auth.authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { name, surname, uin_number, department_id } = req.body;
