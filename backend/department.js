@@ -42,7 +42,7 @@ router.get("/", auth.authenticateToken, async (req, res) => {
   }
 });
 
-// READ ONE DEPARTMENT ???????? needs to give a departments name an return deepartments id and all the employees working there
+// READ ONE DEPARTMENT
 router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
   try {
