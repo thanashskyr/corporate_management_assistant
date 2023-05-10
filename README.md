@@ -1,15 +1,19 @@
 ## **Corporate Application - Scrum - ToDo list**
 
 
-
+**Tasks for Today 09/05**
+  - Change the DB
+    - remove department_id field from employee
+    - READ ONE EMPLOYEE must contains all the departments employee works
+    - READ ONE DEPARTMENT must contains all the employees working in it 
 
 **Tasks for Today 09/05**
 
-- Story 60: In the same file create a router /:id/emp that will return all the employees per department
-  - e.g. /department/1/emp
-- Story 70: Department Validation
-  - No Departments with same name
-- Story 80: Emp Validation
+  - Story 60: In the same file create a router /:id/emp that will return all the employees per department
+    - e.g. /department/1/emp
+  - Story 70: Department Validation
+    - No Departments with same name
+  - Story 80: Emp Validation
 
 
 **Tasks for Today 08/05**
