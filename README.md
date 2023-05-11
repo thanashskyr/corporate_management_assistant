@@ -1,11 +1,15 @@
 ## **Corporate Application - Scrum - ToDo list**
 
 
-**Tasks for Today 09/05**
-  - Change the DB
+**Tasks for 09-011/05**
+  - Complete the department and employee CRUD
     - remove department_id field from employee
     - READ ONE EMPLOYEE must contains all the departments employee works
-    - READ ONE DEPARTMENT must contains all the employees working in it 
+    - READ ONE EMPLOYEE BY NAME and READ ONE EMPLOYEE BY UIN_NUMBER features added
+    - check if an employee with the same name and surname or uin number exists before adding a new employee
+    - READ ONE DEPARTMENT must contains all the employees working on it 
+    - added error messages from invalid inputs
+    - removed commented code from department.js
 
 **Tasks for Today 09/05**
 
