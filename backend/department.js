@@ -25,11 +25,7 @@ router.post("/", auth.authenticateToken, async (req, res) => {
           "INSERT INTO department (name) VALUES ($1) RETURNING *",
           [name]
         );
-        const new_dep_id = emp_result.rows[0].id;
-        // const empdep_result = await pool.query(
-        //   "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
-        //   [new_emp_id, department_id]
-        // );
+   
         res.send("department added succesfully");
       } catch (err) {
         console.error(err);
@@ -57,8 +53,18 @@ router.get("/", auth.authenticateToken, async (req, res) => {
 router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
   try {
-    const result = await pool.query("SELECT * FROM employee WHERE department_id = " + id);
-    res.json(result.rows);
+    const result = await pool.query("SELECT * FROM department WHERE id = " + id);
+    const join_result= await pool.query("SELECT employee_id FROM employee_department WHERE department_id = " + id);
+
+      if (result.rows.length === 0) {
+          
+        res.status(404).send("Department with this id not found");
+      }else{
+        res.json({derpartment: result.rows[0], employees_on_department: join_result.rows});
+      }
+   
+       
+    
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -68,7 +74,7 @@ router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
 // UPDATE 
 router.put("/:id", auth.authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { name, surname, uin_number, department_id } = req.body;
+  const { name, } = req.body;
 
   try {
     const result = await pool.query(

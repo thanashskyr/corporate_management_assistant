@@ -11,24 +11,28 @@ const pool = new pg.Pool({
   port: 5432,
 });
 
-// CREATE
+// CREATE AN EMPLOYEE
 router.post("/", auth.authenticateToken, async (req, res) => {
   const { name, surname, uin_number, department_id } = req.body;
 
-  const exists = await pool.query("SELECT * FROM employee WHERE name = ($1) AND surname = ($2)", [name, surname]);
-  if (exists.rows.length == 0 )
+  const exists_name = await pool.query("SELECT * FROM employee WHERE name = ($1) AND surname = ($2)", [name, surname]);
+  const exists_uin =  await pool.query("SELECT * FROM employee WHERE uin_number = ($1)", [uin_number]);
+  if ((exists_name.rows.length == 0) && (exists_uin.rows.length == 0))
   {
 
       try {
         const emp_result = await pool.query(
-          "INSERT INTO employee (name, surname, uin_number, department_id) VALUES ($1, $2, $3, $4) RETURNING *",
-          [name, surname, uin_number, department_id]
+          "INSERT INTO employee (name, surname, uin_number) VALUES ($1, $2, $3) RETURNING *",
+          [name, surname, uin_number]
         );
+        
         const new_emp_id = emp_result.rows[0].id;
-        const empdep_result = await pool.query(
-          "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
-          [new_emp_id, department_id]
-        );
+        for (let i = 0; i<=department_id.length-1; i++){
+            const empdep_result = await pool.query(
+              "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
+              [new_emp_id, department_id[i]]
+            );
+        }
         res.send("Employee added succesfully");
       } catch (err) {
         console.error(err);
@@ -40,7 +44,7 @@ router.post("/", auth.authenticateToken, async (req, res) => {
 
 });
 
-// READ ALL USERS
+// READ ALL EMPLOYEES
 router.get("/", auth.authenticateToken, async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM employee");
@@ -51,36 +55,82 @@ router.get("/", auth.authenticateToken, async (req, res) => {
   }
 });
 
-// READ ONE USER
-router.get("/:id", auth.authenticateToken, async (req, res) => {
-  const id = req.params.id;
+// READ ONE EMPLOYEE BY NAME
+router.get("/byName", auth.authenticateToken, async (req, res) => {
+  const { name, surname} = req.query;
+
+  //const id = req.params.id;
   try {
-    const result = await pool.query("SELECT * FROM employee WHERE id =  " + id);
-    res.json(result.rows[0]);
+    const result = await pool.query("SELECT * FROM employee WHERE name = $1 AND surname = $2 ", [ name, surname]);
+    const id = result.rows[0].id
+    const join_result= await pool.query("SELECT department_id FROM employee_department WHERE employee_id = " + id);
+   
+       
+        if (result.rows.length === 0) {
+         
+          res.status(404).send("Employee with this name or surname not found");
+        }else{
+          res.json({employee: result.rows[0], working_on: join_result.rows});
+        }
+
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
 
-// UPDATE
+//READ AN EMPLOYEE BY UIN_NUMBER
+router.get("/byUin", auth.authenticateToken, async (req, res) => {
+  const  {uin}  = req.query;
+
+  try {
+    const result = await pool.query("SELECT * FROM employee WHERE uin_number = $1",  [uin] );
+    const id = result.rows[0].id
+    const join_result= await pool.query("SELECT department_id FROM employee_department WHERE employee_id = " + id);
+   
+       
+        if (result.rows.length === 0) {
+         
+          res.status(404).send("Employee with this uin not found");
+        }else{
+          res.json({employee: result.rows[0], working_on: join_result.rows});
+        }
+
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// UPDATE AN EMPLOYEE AND  HIS DEPARTMENTS 
 router.put("/:id", auth.authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { name, surname, uin_number, department_id } = req.body;
 
   try {
     const result = await pool.query(
-      "UPDATE employee SET name = $1, surname = $2, uin_number = $3, department_id= $4 WHERE id = $5 RETURNING *",
-      [name, surname, uin_number, department_id, id]
+      "UPDATE employee SET name = $1, surname = $2, uin_number = $3 WHERE id = $4 RETURNING *",
+      [name, surname, uin_number, id]
     );
+    const del = await pool.query(
+    "DELETE FROM employee_department WHERE employee_id = " + id);
+
+    for (let i = 0; i<=department_id.length-1; i++){
+        const empdep_result = await pool.query(
+          "INSERT INTO employee_department (employee_id, department_id) VALUES ($1, $2);",
+          [id, department_id[i]]
+        );
+    }
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).send("Not such an employee or department");
   }
 });
 
-// DELETE
+// DELETE AN EMPLOYEE
 router.delete("/:id", auth.authenticateToken, async (req, res) => {
   const id = req.params.id;
 

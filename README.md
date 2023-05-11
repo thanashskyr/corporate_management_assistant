@@ -1,15 +1,23 @@
 ## **Corporate Application - Scrum - ToDo list**
 
 
-
+**Tasks for 09-011/05**
+  - Complete the department and employee CRUD
+    - remove department_id field from employee
+    - READ ONE EMPLOYEE must contains all the departments employee works
+    - READ ONE EMPLOYEE BY NAME and READ ONE EMPLOYEE BY UIN_NUMBER features added
+    - check if an employee with the same name and surname or uin number exists before adding a new employee
+    - READ ONE DEPARTMENT must contains all the employees working on it 
+    - added error messages from invalid inputs
+    - removed commented code from department.js
 
 **Tasks for Today 09/05**
 
-- Story 60: In the same file create a router /:id/emp that will return all the employees per department
-  - e.g. /department/1/emp
-- Story 70: Department Validation
-  - No Departments with same name
-- Story 80: Emp Validation
+  - Story 60: In the same file create a router /:id/emp that will return all the employees per department
+    - e.g. /department/1/emp
+  - Story 70: Department Validation
+    - No Departments with same name
+  - Story 80: Emp Validation
 
 
 **Tasks for Today 08/05**
