@@ -4,9 +4,9 @@ Database: CorpApplication
 
 DROP DATABASE IF EXISTS "CorpApplication";
 DROP TABLE tokens;
-DROP TABLE Department CASCADE;
-DROP TABLE Employee CASCADE;
-DROP TABLE Employee_Department CASCADE;
+DROP TABLE department CASCADE;
+DROP TABLE employee CASCADE;
+DROP TABLE employee_Department CASCADE;
 
 -- SQL queries to CREATE all DB tables needed so far
 
@@ -21,7 +21,7 @@ CREATE DATABASE "CorpApplication"
     IS_TEMPLATE = False;
 	
 	
-CREATE TABLE USERS (
+CREATE TABLE users (
   NAME VARCHAR(255),
   SIRNAME VARCHAR(255),
   UIN VARCHAR(255),
@@ -59,7 +59,7 @@ CREATE TABLE employee_department (
 
 -- Following INSERT used to manually inject USERS 
 
-INSERT INTO USERS (NAME, SIRNAME, UIN, USERNAME, PASSWORD)
+INSERT INTO users (name, sirname, uin, username, password)
 VALUES 
   ('Thita', 'Kapa', '00000000', 'thita', 'passkapa'),
   ('Alpha', 'Vita', '11111111', 'alpha', 'passvita'),
@@ -91,7 +91,7 @@ INSERT INTO employee_department (employee_id, department_id) VALUES (2, 1);
 INSERT INTO employee_department (employee_id, department_id) VALUES (3, 3);
 
 -- Testing: SQL Queries to SELECT to Tables
-SELECT * FROM TOKENS;
+SELECT * FROM tokens;
 select * from employee;
 select * from department;
 select * from employee_department;

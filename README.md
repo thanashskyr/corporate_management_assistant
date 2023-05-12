@@ -1,6 +1,15 @@
 ## **Corporate Application - Scrum - ToDo list**
-
-
+**Tasks for 12/05**
+  - story100
+    - issue#12 fixed
+      - Use JOIN query at ADD ONE DEPARTMENT
+      - Use JOIN query at READ ONE EMPLOYEE BY NAME
+      - Use JOIN query at READ ONE EMPLOYEE BY UIN
+    - issue #10 fixed avoid callback hell
+      - Removed callback function from auth.authenticateUser function and use of async-await
+      - Removed callback function from jwt.storeToken function and use of async-await   
+      - Use of async-await at login.js
+    - issue #9 fixed lowercase naming in db artifacts  
 **Tasks for 09-011/05**
   - Complete the department and employee CRUD
     - remove department_id field from employee

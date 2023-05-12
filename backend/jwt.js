@@ -43,20 +43,15 @@ const verifyToken = (token, callback) => {
   }
 };
 
-const storeToken = (username, token, callback) => {
+const storeToken = async (username, token) => {
+  
   const sql = format(
     "INSERT INTO tokens (username, token) VALUES (%L, %L)",
     username,
     token
   );
-  pool.query(sql, (err, result) => {
-    if (err) {
-      console.log(err);
-      callback(err, null);
-    } else {
-      callback(null, true);
-    }
-  });
+  await pool.query(sql);
+ 
 };
 
 module.exports = {
