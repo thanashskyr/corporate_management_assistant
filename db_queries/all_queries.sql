@@ -6,7 +6,7 @@ DROP DATABASE IF EXISTS "CorpApplication";
 DROP TABLE tokens;
 DROP TABLE department CASCADE;
 DROP TABLE employee CASCADE;
-DROP TABLE employee_Department CASCADE;
+DROP TABLE employee_department CASCADE;
 
 -- SQL queries to CREATE all DB tables needed so far
 
@@ -22,11 +22,11 @@ CREATE DATABASE "CorpApplication"
 	
 	
 CREATE TABLE users (
-  NAME VARCHAR(255),
-  SIRNAME VARCHAR(255),
-  UIN VARCHAR(255),
-  USERNAME VARCHAR(255),
-  PASSWORD VARCHAR(255)
+  name VARCHAR(255),
+  sirname VARCHAR(255),
+  vat VARCHAR(255),
+  username VARCHAR(255),
+  password VARCHAR(255)
 );
 
 
@@ -46,9 +46,8 @@ CREATE TABLE department (
 CREATE TABLE employee (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  surname VARCHAR(255) NOT NULL,
-  uin_number VARCHAR(255) NOT NULL,
-  department_id INTEGER REFERENCES department(id)
+  sirname VARCHAR(255) NOT NULL,
+  vat VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE employee_department (
@@ -59,7 +58,7 @@ CREATE TABLE employee_department (
 
 -- Following INSERT used to manually inject USERS 
 
-INSERT INTO users (name, sirname, uin, username, password)
+INSERT INTO users (name, sirname, vat, username, password)
 VALUES 
   ('Thita', 'Kapa', '00000000', 'thita', 'passkapa'),
   ('Alpha', 'Vita', '11111111', 'alpha', 'passvita'),
@@ -76,14 +75,14 @@ INSERT INTO department (name) VALUES ('IT');
 INSERT INTO department (name) VALUES ('Sales');
 INSERT INTO department (name) VALUES ('HR');
 
-INSERT INTO employee (name, surname, uin_number, department_id) 
-VALUES ('John', 'Doe', '12345', 1);
+INSERT INTO employee (name, surname, vat) 
+VALUES ('John', 'Doe', '12345');
 
-INSERT INTO employee (name, surname, uin_number, department_id) 
-VALUES ('Jane', 'Doe', '67890', 2);
+INSERT INTO employee (name, surname, vat) 
+VALUES ('Jane', 'Doe', '67890');
 
-INSERT INTO employee (name, surname, uin_number, department_id) 
-VALUES ('Bob', 'Smith', '24680', 3);
+INSERT INTO employee (name, surname, vat) 
+VALUES ('Bob', 'Smith', '24680');
 
 INSERT INTO employee_department (employee_id, department_id) VALUES (1, 1);
 INSERT INTO employee_department (employee_id, department_id) VALUES (2, 2);
@@ -96,8 +95,17 @@ select * from employee;
 select * from department;
 select * from employee_department;
 
-SELECT e.name, e.surname, e.uin_number
+-- Select all employees that work in a department 
+SELECT e.name, e.sirname, e.vat
 FROM employee e
 JOIN employee_department de ON e.id = de.employee_id
 JOIN department d ON de.department_id = d.id
-WHERE d.name = 'IT';
+WHERE d.id = 4;
+
+
+-- Select all departments that an employee works
+SELECT d.name , d.id 
+FROM department d 
+JOIN employee_department ed ON d.id = ed.department_id 
+JOIN employee e ON e.id = ed.employee_id 
+WHERE e.name = 'Bob' AND e.sirname = 'Smith';
