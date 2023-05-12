@@ -9,24 +9,23 @@ const pool = new pg.Pool({
   port: 5432,
 });
 
-const authenticateUser = (username, password, callback) => {
-  pool.query(
-    "SELECT * FROM users WHERE username = $1 AND password = $2",
-    [username, password],
-    (err, result) => {
-      console.log(result);
-      if (err) {
-        console.log(err);
-        callback(err, null);
-      } else {
+const authenticateUser = async(username, password) => {
+  try{
+      
+    const result = await pool.query("SELECT * FROM users WHERE username = $1 AND password = $2",[username, password])
+      
         if (result.rows.length > 0) {
-          callback(null, true);
+          isAuthenticated = true;
         } else {
-          callback(null, false);
+          isAuthenticated = false;
         }
-      }
-    }
-  );
+      
+    return isAuthenticated;
+      
+  }catch(err){
+        
+        throw err;
+  }    
 };
 
 // Middleware function to check if the user is authenticated
