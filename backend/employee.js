@@ -6,24 +6,24 @@ const pg = require("pg");
 const pool = new pg.Pool({
   user: "postgres",
   host: "localhost",
-  database: "CorpApplication",
+  database: "corpapp",
   password: "postgres",
   port: 5432,
 });
 
 // CREATE AN EMPLOYEE
 router.post("/", auth.authenticateToken, async (req, res) => {
-  const { name, surname, uin_number, department_id } = req.body;
+  const { name, sirname, vat, department_id } = req.body;
 
-  const exists_name = await pool.query("SELECT * FROM employee WHERE name = ($1) AND surname = ($2)", [name, surname]);
-  const exists_uin =  await pool.query("SELECT * FROM employee WHERE uin_number = ($1)", [uin_number]);
-  if ((exists_name.rows.length == 0) && (exists_uin.rows.length == 0))
+  const exists_name = await pool.query("SELECT * FROM employee WHERE name = ($1) AND sirname = ($2)", [name, sirname]);
+  const exists_vat =  await pool.query("SELECT * FROM employee WHERE vat = ($1)", [vat]);
+  if ((exists_name.rows.length == 0) && (exists_vat.rows.length == 0))
   {
 
       try {
         const emp_result = await pool.query(
-          "INSERT INTO employee (name, surname, uin_number) VALUES ($1, $2, $3) RETURNING *",
-          [name, surname, uin_number]
+          "INSERT INTO employee (name, sirname, vat) VALUES ($1, $2, $3) RETURNING *",
+          [name, sirname, vat]
         );
         
         const new_emp_id = emp_result.rows[0].id;
@@ -57,15 +57,15 @@ router.get("/", auth.authenticateToken, async (req, res) => {
 
 // READ ONE EMPLOYEE BY NAME
 router.get("/byName", auth.authenticateToken, async (req, res) => {
-  const { name, surname} = req.query;
+  const { name, sirname} = req.query;
 
   try {
-    const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE e.name = $1 AND e.surname = $2 ", [ name , surname ]);
-    const employee= await pool.query("SELECT * FROM employee WHERE name = $1 AND surname = $2 ", [ name , surname ]);
+    const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE e.name = $1 AND e.sirname = $2 ", [ name , sirname ]);
+    const employee= await pool.query("SELECT * FROM employee WHERE name = $1 AND sirname = $2 ", [ name , sirname ]);
        
         if (employee.rows.length === 0) {
          
-          res.status(404).send("Employee with this name or surname not found");
+          res.status(404).send("Employee with this name or sirname not found");
         }else{
           res.json({employee: employee.rows[0], working_on: departments.rows});
         }
@@ -77,17 +77,17 @@ router.get("/byName", auth.authenticateToken, async (req, res) => {
   }
 });
 
-//READ AN EMPLOYEE BY UIN_NUMBER
-router.get("/byUin", auth.authenticateToken, async (req, res) => {
-  const  {uin}  = req.query;
+//READ AN EMPLOYEE BY VAT
+router.get("/byVat", auth.authenticateToken, async (req, res) => {
+  const  {vat}  = req.query;
 
   try {
-    const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE e.uin_number = $1 ", [ uin ]);
-    const employee= await pool.query("SELECT * FROM employee WHERE uin_number = $1", [ uin ]);
+    const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE vat = $1 ", [ vat ]);
+    const employee= await pool.query("SELECT * FROM employee WHERE vat = $1", [ vat ]);
        
         if (employee.rows.length === 0) {
          
-          res.status(404).send("Employee with this uin not found");
+          res.status(404).send("Employee with this vat not found");
         }else{
           res.json({employee: employee.rows[0], working_on: departments.rows});
         }
@@ -102,12 +102,12 @@ router.get("/byUin", auth.authenticateToken, async (req, res) => {
 // UPDATE AN EMPLOYEE AND  HIS DEPARTMENTS 
 router.put("/:id", auth.authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { name, surname, uin_number, department_id } = req.body;
+  const { name, sirname, vat, department_id } = req.body;
 
   try {
     const result = await pool.query(
-      "UPDATE employee SET name = $1, surname = $2, uin_number = $3 WHERE id = $4 RETURNING *",
-      [name, surname, uin_number, id]
+      "UPDATE employee SET name = $1, sirname = $2, vat = $3 WHERE id = $4 RETURNING *",
+      [name, sirname, vat, id]
     );
     const del = await pool.query(
     "DELETE FROM employee_department WHERE employee_id = " + id);

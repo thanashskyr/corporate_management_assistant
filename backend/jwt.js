@@ -5,7 +5,7 @@ const format = require("pg-format");
 const pool = new pg.Pool({
   user: "postgres",
   host: "localhost",
-  database: "CorpApplication",
+  database: "corpapp",
   password: "postgres",
   port: 5432,
 });
