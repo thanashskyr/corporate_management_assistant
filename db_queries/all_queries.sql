@@ -2,7 +2,7 @@ Database: CorpApplication
 
 -- SQL queries to DROP all DB tables needed so far
 
-DROP DATABASE IF EXISTS "CorpApplication";
+DROP DATABASE IF EXISTS corpapp;
 DROP TABLE tokens;
 DROP TABLE department CASCADE;
 DROP TABLE employee CASCADE;
@@ -10,7 +10,7 @@ DROP TABLE employee_department CASCADE;
 
 -- SQL queries to CREATE all DB tables needed so far
 
-CREATE DATABASE "CorpApplication"
+CREATE DATABASE corpapp
     WITH
     OWNER = postgres
     ENCODING = 'UTF8'
