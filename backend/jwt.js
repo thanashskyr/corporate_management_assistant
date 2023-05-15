@@ -1,14 +1,6 @@
 const jwt = require("jsonwebtoken");
-const pg = require("pg");
 const format = require("pg-format");
-
-const pool = new pg.Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "corpapp",
-  password: "postgres",
-  port: 5432,
-});
+const pool = require("./db");
 
 pool
   .connect()

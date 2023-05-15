@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  //let isAuthenticated= false;
+  
  
 try {
     await auth.authenticateUser(username, password);
