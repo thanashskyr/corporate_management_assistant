@@ -1,15 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("./auth");
-const pg = require("pg");
-
-const pool = new pg.Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "corpapp",
-  password: "postgres",
-  port: 5432,
-});
+const pool = require("./db");
 
 // CREATE
 router.post("/", auth.authenticateToken, async (req, res) => {

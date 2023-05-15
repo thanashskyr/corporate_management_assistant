@@ -1,13 +1,5 @@
-const pg = require("pg");
 const jwt = require("./jwt");
-
-const pool = new pg.Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "corpapp",
-  password: "postgres",
-  port: 5432,
-});
+const pool = require("./db");
 
 const authenticateUser = async(username, password) => {
   try{
