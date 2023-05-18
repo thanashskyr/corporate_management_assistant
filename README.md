@@ -1,4 +1,9 @@
 ## **Corporate Application - Scrum - ToDo list**
+**Tasks for Today 15/05**
+  - Issue 17: Put the db connection in db.js file
+  - Issue 19: Created user logout router
+  - Installed React and created frontend folder
+  
 **Tasks for 12/05**
   - story100
     - issue#12 fixed
