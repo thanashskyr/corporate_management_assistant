@@ -3,6 +3,7 @@ const jwt = require("./jwt");
 const auth = require("./auth");
 const router = express.Router();
 
+
 router.post("/", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -22,9 +23,9 @@ try {
             }
 
             res.cookie("token", token, { maxAge: 86400000 });
-            res.send("Login successful!");
+            res.status(200).send({token: token, message: "Login successful!"});
         }else {
-        res.send("Invalid username or password");
+        res.status(401).send("Invalid username or password");
       }
     
 } catch (err){
