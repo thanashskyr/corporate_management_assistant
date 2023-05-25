@@ -4,8 +4,12 @@ const auth = require("./auth");
 const pool = require("./db");
 // CREATE AN EMPLOYEE
 router.post("/", auth.authenticateToken, async (req, res) => {
+  
   const { name, sirname, vat, department_id } = req.body;
-
+  if(!name || !sirname || !vat || !department_id){
+    return res.status(400).send("Bad Request");
+    
+  }
   const exists_name = await pool.query("SELECT * FROM employee WHERE name = ($1) AND sirname = ($2)", [name, sirname]);
   const exists_vat =  await pool.query("SELECT * FROM employee WHERE vat = ($1)", [vat]);
   if ((exists_name.rows.length == 0) && (exists_vat.rows.length == 0))
@@ -30,7 +34,7 @@ router.post("/", auth.authenticateToken, async (req, res) => {
         res.status(500).send("Server error");
       }
   }else{
-    res.send("employee already exists");
+    res.status(422).send("employee already exists");
   }
 
 });
@@ -38,7 +42,14 @@ router.post("/", auth.authenticateToken, async (req, res) => {
 // READ ALL EMPLOYEES
 router.get("/", auth.authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM employee");
+    const result = await pool.query(`
+    SELECT e.id, e.name, e.sirname, e.vat, array_agg(d.name) AS departments
+    FROM employee AS e
+    JOIN employee_department AS ed ON e.id = ed.employee_id
+    JOIN department AS d ON ed.department_id = d.id
+    GROUP BY e.id, e.name
+  `);
+    //const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE e.name = $1 AND e.sirname = $2 ", [ name , sirname ]);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

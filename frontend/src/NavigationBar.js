@@ -1,9 +1,14 @@
 import React from 'react';
-import { Button, Box, Typography } from '@mui/material';
+//import { Button, Box, Typography } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { Logout } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
+import cmaLogo from './cmaLogoNoBG.png';
 
-const useHandleLogout = () => {
- const history = useHistory();
+
+const NavigationBar = () => {
+
+  const history = useHistory();
 
   const HandleLogout = () => {
     const storedToken = localStorage.getItem('token');
@@ -31,22 +36,38 @@ const useHandleLogout = () => {
       });
       
   }
-  return HandleLogout;
-}
-
-function NavigationBar() {
-
-  const HandleLogout = useHandleLogout();
 
   return (
-    <Box sx={{ backgroundColor: 'grey', padding: '20px' }}>
-      <Typography variant="h5" sx={{ color: 'white', mb: 3, mr: 2, mt: 3 }}>
-        Welcome to Corporation Management App!
+    // <Box position='fixed' sx={{  top: 0,right:0, left:0, backgroundColor: '#1b657e', padding: '17px',zIndex: 1}}>
+    //   <Typography >
+    //   <img src={cmaLogo} alt="Logo" style={{ width: '250px', height: '80px', marginBottom: '10px', marginTop:'-6px'}} />
+    //   </Typography>
+    //   <Button variant="contained"  sx={{
+    //     position: 'fixed',
+    //     top: 17,
+    //     right: 20,
+    //     backgroundColor: '#2da9d2',
+    //     padding: '20px',
+    //     display: 'flex',
+    //     justifyContent: 'flex-end'
+    //     , textShadow: '2px 2px 4px rgba(0, 0, 0, 2)'
+    //   }}onClick={HandleLogout}>
+    //     Log Out!
+    //    </Button>
+     
+    // </Box>
+
+    <AppBar position="fixed">
+    <Toolbar>
+      {<img src={cmaLogo} alt="Logo" style={{ width: '180px', height: '50px',marginRight: '16px' }} /> }
+      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        Corporate Management Application
       </Typography>
-      <Button variant="outlined" sx={{ bgcolor: '#2196f3', color: 'white' }} onClick={HandleLogout}>
-        Log Out!
+      <Button color="inherit" startIcon={<Logout />} onClick={HandleLogout}>
+        Logout
       </Button>
-    </Box>
+    </Toolbar>
+  </AppBar>
   );
 }
 
