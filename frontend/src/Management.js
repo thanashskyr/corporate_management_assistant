@@ -10,6 +10,7 @@ import { useHistory } from "react-router-dom";
 
 const Management = ({onNewEmpAdded, selectedRow}) => {
   const [showAddEmployeeInput, setShowAddEmployeeInput] = useState(false);
+  const [showSearch, setShowSearch]= useState(false);
   const [allDepartments, setAllDepartments] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [addEmpValues, setAddEmpValues] = useState({
@@ -17,12 +18,27 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
     sirname: "",
     vat: "",
   });
+  const [searchValues, setSearchValues] = useState({
+    name: "",
+    sirname: ""
+  });
   const [updateDisable, setUpdateDisable] = useState(true);
   const [deleteDisable, setDeleteDisable] = useState(true);
+  const [searchDisable, setSearchDisable] = useState(true);
 
   useEffect(() => {
-    console.log(selectedRow);
-        
+    //console.log(selectedRow);
+    const getName= searchValues.name;
+    const getSirname= searchValues.sirname;
+    if (getName && getSirname){
+        setSearchDisable(false);
+      }else{
+          setSearchDisable(true);
+      }
+      console.log(searchValues);
+
+
+
     if(selectedRow.length > 0 && selectedRow.length < 2){
         setUpdateDisable(false);
         setDeleteDisable(false);
@@ -32,13 +48,50 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
         setUpdateDisable(true);
         setDeleteDisable(true); 
     }
-  }, [selectedRow]);
+  }, [selectedRow,searchValues]);
 
   const history = useHistory();
 
   const HandleGoBack = () => {
     history.push("/Dashboard");
   };
+
+
+  const handleDeleteEmp = async () =>{
+    alert("Employee will be deleted!");
+    
+    for (let i=0;  i< selectedRow.length; i++){
+        const selectedID=selectedRow[i].id;
+            
+            try {
+                    const storedToken = localStorage.getItem("token");
+                    const response = await fetch(`http://localhost:3000/emp/${selectedID}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + storedToken,
+                    },
+                    });
+                    console.log(response);
+                    
+                  
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+    }    
+    onNewEmpAdded();
+    setDeleteDisable(true);
+    setUpdateDisable(true);
+
+  }
+
+ const handleSearch = async () => {
+    setShowSearch(!showSearch);
+
+ }
+
+
+
+
 
   const handleAddEmployeeClick = async () => {
     setShowAddEmployeeInput(!showAddEmployeeInput);
@@ -76,6 +129,46 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
       );
     }
   };
+
+  const handleSearchValues = async (event) => {
+    const { name, value } = event.target;
+    await setSearchValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+    };
+
+  const handleGetEmp = async () => {
+    const getName= searchValues.name;
+    const getSirname= searchValues.sirname;
+   
+    try{
+        const storedToken = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/emp/byName?name=${getName}&&sirname=${getSirname}`, {
+        method: "GET",
+        headers: {
+          
+          Authorization: "Bearer " + storedToken,
+        },
+        
+      });
+      if (response.status === 200) {
+        const getEmp = await response.json();
+       console.log(getEmp);
+      } else {
+        alert('employee not found');
+        throw new Error("get employee failed");
+        
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+   
+}
+
+
+
+
 
   const handleAddEmpValues = (event) => {
     const { name, value } = event.target;
@@ -151,8 +244,8 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button onClick={handleAddEmployeeClick}>Add Employee</Button>
           <Button disabled = {updateDisable} >Update Employee Info</Button>
-          <Button disabled = {deleteDisable} >Delete Employee</Button>
-          <Button>Search</Button>
+          <Button onClick={handleDeleteEmp} disabled = {deleteDisable} >Delete Employee</Button>
+          <Button onClick={handleSearch}>Search Menu</Button>
         </Box>
         <Button sx={{ marginRight: "10px" }} onClick={HandleGoBack}>
           Go Back
@@ -220,6 +313,50 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
           </Box>
         </Toolbar>
       )}
+      
+      {showSearch && (
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            backgroundColor: "white",
+            transition: "background-color 0.3s ease",
+          }}
+        >
+          <TextField
+            label="Name"
+            sx={{ marginRight: "10px" }}
+            name="name"
+            value={searchValues.name}
+            onChange={handleSearchValues}
+          />
+          <TextField
+            label="SirName"
+            sx={{ marginRight: "10px" }}
+            name="sirname"
+            value={searchValues.sirname}
+            onChange={handleSearchValues}
+          />
+          <TextField
+            label="VAT"
+            sx={{ marginRight: "10px" }}
+            name="vat"
+            value={searchValues.vat}
+            onChange={handleSearchValues}
+          />
+           <Button
+              variant="contained"
+              sx={{ marginLeft: "10px" }}
+              disabled = {searchDisable}
+              onClick={handleGetEmp}
+            >
+              Search
+            </Button>
+         
+        </Toolbar>  
+        )}
+
     </Box>
   );
 };
