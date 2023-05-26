@@ -24,19 +24,27 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
   });
   const [updateDisable, setUpdateDisable] = useState(true);
   const [deleteDisable, setDeleteDisable] = useState(true);
-  const [searchDisable, setSearchDisable] = useState(true);
+  const [searchNameDisable, setSearchNameDisable] = useState(true);
+  const [searchVatDisable, setSearchVatDisable] = useState(true);
+//   const [showSearchResult, setShowSearchResult] = useState(true);
+
 
   useEffect(() => {
     //console.log(selectedRow);
     const getName= searchValues.name;
     const getSirname= searchValues.sirname;
+    const getVat= searchValues.vat;
     if (getName && getSirname){
-        setSearchDisable(false);
+        setSearchNameDisable(false);
       }else{
-          setSearchDisable(true);
+          setSearchNameDisable(true);
       }
-      console.log(searchValues);
 
+      if (getVat){
+        setSearchVatDisable(false);
+      }else{
+          setSearchVatDisable(true);
+      }
 
 
     if(selectedRow.length > 0 && selectedRow.length < 2){
@@ -138,9 +146,11 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
     }));
     };
 
-  const handleGetEmp = async () => {
+  const handleGetEmpName= async () => {
     const getName= searchValues.name;
     const getSirname= searchValues.sirname;
+   
+
    
     try{
         const storedToken = localStorage.getItem("token");
@@ -154,7 +164,7 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
       });
       if (response.status === 200) {
         const getEmp = await response.json();
-       console.log(getEmp);
+        console.log(getEmp.employee.id);
       } else {
         alert('employee not found');
         throw new Error("get employee failed");
@@ -163,8 +173,34 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
     } catch (error) {
       console.error("Error:", error);
     }
-   
+  }
+const handleGetEmpVat = async () =>{
+  const getVat=searchValues.vat;
+    try{
+        const storedToken = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/emp/byVat?vat=${getVat}`, {
+        method: "GET",
+        headers: {
+          
+          Authorization: "Bearer " + storedToken,
+        },
+        
+      });
+      if (response.status === 200) {
+        const getEmp = await response.json();
+        console.log(getEmp.employee.id);
+      } else {
+        alert('employee not found');
+        throw new Error("get employee failed");
+        
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
 }
+   
+
 
 
 
@@ -338,9 +374,18 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
             value={searchValues.sirname}
             onChange={handleSearchValues}
           />
+          <Button
+          variant="contained"
+          sx={{ marginLeft: "10px" }}
+          disabled = {searchNameDisable}
+          onClick={handleGetEmpName}
+        >
+          Search by Name
+        </Button>
+          
           <TextField
             label="VAT"
-            sx={{ marginRight: "10px" }}
+            sx={{ marginRight: "10px", marginLeft:"10px" }}
             name="vat"
             value={searchValues.vat}
             onChange={handleSearchValues}
@@ -348,15 +393,14 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
            <Button
               variant="contained"
               sx={{ marginLeft: "10px" }}
-              disabled = {searchDisable}
-              onClick={handleGetEmp}
+              disabled = {searchVatDisable}
+              onClick={handleGetEmpVat}
             >
-              Search
+              Search by Vat
             </Button>
          
         </Toolbar>  
         )}
-
     </Box>
   );
 };
