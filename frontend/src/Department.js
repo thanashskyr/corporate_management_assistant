@@ -1,184 +1,133 @@
-import React from 'react';
-import { Box, Button, Typography, TextField} from '@mui/material';
-import NavigationBar from './NavigationBar';
-import { useHistory } from 'react-router-dom';
-import { useState , useEffect } from 'react';
+import React from "react";
+import { Box, Button, Typography, TextField } from "@mui/material";
+import NavigationBar from "./NavigationBar";
+import { useHistory } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import DepManagement from "./DepManagement";
 
-const useHandleNewDepartment = () => {
-  const [showInput, setShowInput] = useState(false);
-  const HandleNewDepartment = () => {
-    if (showInput === false) {
-      setShowInput(true);
-    } else {
-      setShowInput(false);
-    }
-    console.log("new employee");
-  };
-  return { HandleNewDepartment, showInput };
-};
-  
-
-
-const Departments = () =>  {
-
-
-  const history = useHistory();    
-    
-  const HandleGoBack = () => {
-      history.push("/Dashboard");
-  }
-
+const Departments = () => {
   const [DepData, setDepData] = useState([]);
+  const [newDepAdded, setNewDepAdded] = useState(false);
+  const [selectedRow, setSelectedRow] = useState([]);
+  const [dataFromChild, setDataFromChild] = useState(null);
+
+  const handleDataFromChild = (data) => {
+    // Handle the data received from the child component
+    setDataFromChild(data);
+    console.log(dataFromChild);
+  };
+
+  // Used to re-render Datagrid when a new dep is submitted
+  const handleNewDepAdded = () => {
+    setNewDepAdded(!newDepAdded);
+  };
 
   useEffect(() => {
     const fetchDepData = async () => {
-        try{
-            const storedToken = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/dep', {
-                method: 'get',
-                headers: {
-              'Authorization': 'Bearer ' + storedToken
-            }
-            });
-        
-            if (response.status === 200) {
-              const jsondata = await response.json();
-              setDepData(jsondata);
-              
-            } else {
-              throw new Error('Get departments failed');
-            }
-          
-        } catch (error) {
-          console.error('Error:', error);
+      try {
+        const storedToken = localStorage.getItem("token");
+        const response = await fetch("http://localhost:3000/dep", {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + storedToken,
+          },
+        });
+
+        if (response.status === 200) {
+          const jsondata = await response.json();
+          setDepData(jsondata);
+        } else {
+          throw new Error("Get departments failed");
         }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     };
 
     fetchDepData();
+  }, [newDepAdded]);
 
-}, []);
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "name", headerName: "Name", width: 150 },
+  ];
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 100 },
-  { field: 'name', headerName: 'Name', width: 150 },
-];
-const { HandleNewDepartment, showInput } = useHandleNewDepartment();
+  const empcolumns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "sirname", headerName: "Sirname", width: 150 },
+    { field: "vat", headerName: "VAT", width: 150 },
+  ];
+
+  const handleCloseEmployees = () => {
+    setDataFromChild(null);
+    setSelectedRow([]);
+  };
 
   return (
     <div>
-     <NavigationBar />
-     <Box position='fixed' sx={{  top: 64,right:0, left:0,backgroundColor: 'white', padding: '30px',zIndex: 1}}>
-      <Typography variant="h4" component="h2" sx={{  marginLeft:'10px'}}>
-        Manage Departments
-      </Typography>
-      </Box>
-      <Box       position="fixed"
-        top={80}
-        left={0}
-        right={0}
-        display="flex"
-        flexDirection="row"
-        justifyContent="center"
-        alignItems="center"
-        height="15vh"
-        sx={{
-        backgroundColor: '#0E5D94',
-        zIndex: 1 , marginTop: '80px'}}
-        >
-      <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          onClick={HandleNewDepartment}
-      >
-      New Department
-      </Button>
-      {showInput && (
-      <div>
-      <TextField
-          label="Name"
-          InputLabelProps={{
-            style: { transform: 'translate(3px , 1.5px) scale(0.95)' },
-          }}
-          variant="outlined"
-          size="small"
-          sx={{
-            width: '92%',
-            '& .MuiInputBase-input': {
-              fontSize: '0.8rem',
-              padding: '4px 8px',
-              background: '#70B3E1'
+      <NavigationBar />
+      <DepManagement
+        onNewDepAdded={handleNewDepAdded}
+        selectedRow={selectedRow}
+        onData={handleDataFromChild}
+      />
+      {dataFromChild && (
+        <Box position="relative" top={305} left={20} marginRight={5}>
+          <Typography variant="h4">
+            Employees working on{" "}
+            {DepData.find((obj) => obj.id === dataFromChild[0].department_id)
+              ?.name || ""}
+          </Typography>
+          <DataGrid
+            rows={dataFromChild}
+            columns={empcolumns}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 10 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+            sx={{ backgroundColor: "white" }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleCloseEmployees}
+            sx={{ margin: "10px" }}
+          >
+            Close
+          </Button>
+        </Box>
+      )}
+
+      <Box position="relative" top={305} left={20} marginRight={5}>
+        <DataGrid
+          rows={DepData}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          onChange={(e) => console.log(e.target.value)}
-      />  
-        <Button  variant="contained"
-          size="small"
-          color="primary">
-              submit new department
-             </Button>
-          </div>
-        )}
- 
-
-      <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          style={{ marginLeft: "20px" }}
-        >
-          Update
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          style={{ marginLeft: "20px" }}
-        >
-          Delete
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          style={{ marginLeft: "20px", marginRight: '1315px' }}
-        >
-          Search
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          sx={{
-            position: "fixed",
-            right: 20,
-            backgroundColor: "primary",
-            display: "flex",
-            justifyContent: "flex-end"
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          onRowSelectionModelChange={(newSelection) => {
+            if (newSelection.length > 0) {
+              const selectedDepRows = DepData.filter((obj) =>
+                newSelection.includes(obj.id)
+              );
+              setSelectedRow(selectedDepRows);
+              console.log(selectedRow);
+            } else {
+              setDataFromChild(null);
+              setSelectedRow([]);
+            }
           }}
-          onClick={HandleGoBack}
-        >
-          Go back
-        </Button>
-      </Box>
-      <Box position="relative" top={305} left={0} right={0}>
-        <DataGrid
-        rows={DepData}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        
-      />
+        />
       </Box>
     </div>
-    
   );
-}
+};
 
 export default Departments;

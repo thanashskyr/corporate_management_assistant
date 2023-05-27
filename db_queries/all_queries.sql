@@ -75,13 +75,13 @@ INSERT INTO department (name) VALUES ('IT');
 INSERT INTO department (name) VALUES ('Sales');
 INSERT INTO department (name) VALUES ('HR');
 
-INSERT INTO employee (name, surname, vat) 
+INSERT INTO employee (name, sirname, vat) 
 VALUES ('John', 'Doe', '12345');
 
-INSERT INTO employee (name, surname, vat) 
+INSERT INTO employee (name, sirname, vat) 
 VALUES ('Jane', 'Doe', '67890');
 
-INSERT INTO employee (name, surname, vat) 
+INSERT INTO employee (name, sirname, vat) 
 VALUES ('Bob', 'Smith', '24680');
 
 INSERT INTO employee_department (employee_id, department_id) VALUES (1, 1);
