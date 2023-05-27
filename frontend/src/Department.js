@@ -11,14 +11,20 @@ const Departments = () => {
   const [newDepAdded, setNewDepAdded] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
   const [dataFromChild, setDataFromChild] = useState(null);
+  const [managementExpand, setManagementExpand] = useState(false);
 
   // Is passed (as onData prop) to the child component
   // which sets the state of dataFromChild in the parrent component.
   // So data fetched from child component can be accessed from the parrent component.
-
   const handleDataFromChild = (data) => {
     // Handle the data received from the child component
     setDataFromChild(data);
+  };
+
+  // Is used to check if the child component (DepManagement) has been expanded
+  // So it can re-arrange the Datagrid table
+  const handleDepManagementExpand = (managementExpand) => {
+    setManagementExpand(managementExpand);
   };
 
   // Used to re-render Datagrid when a new dep is submitted
@@ -67,7 +73,7 @@ const Departments = () => {
     setDataFromChild(null);
     setSelectedRow([]);
   };
-
+  //305
   return (
     <div>
       <NavigationBar />
@@ -75,6 +81,7 @@ const Departments = () => {
         onNewDepAdded={handleNewDepAdded}
         selectedRow={selectedRow}
         onData={handleDataFromChild}
+        didExpand={handleDepManagementExpand}
       />
       {dataFromChild && (
         <Box position="relative" top={305} left={20} marginRight={5}>
@@ -92,7 +99,9 @@ const Departments = () => {
               },
             }}
             pageSizeOptions={[5, 10]}
-            sx={{ backgroundColor: "white" }}
+            sx={{
+              backgroundColor: "white",
+            }}
           />
           <Button
             variant="contained"
@@ -115,6 +124,12 @@ const Departments = () => {
           }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          sx={{
+            top: managementExpand ? "20px" : "60px",
+            left: "20",
+            marginRight: "5",
+            backgroundColor: "white",
+          }}
           onRowSelectionModelChange={(newSelection) => {
             if (newSelection.length > 0) {
               const selectedDepRows = DepData.filter((obj) =>
