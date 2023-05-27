@@ -7,7 +7,7 @@ import { Typography } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import zIndex from "@mui/material/styles/zIndex";
 
-const Management = ({ onNewDepAdded, selectedRow, onData }) => {
+const Management = ({ onNewDepAdded, selectedRow, onData, didExpand }) => {
   // onNewDepAdded is a function passed as prop from the parent component (Department.js)
   // which makes sure when a new Department is added to inform the parent component and run again
   // the fetch logic to update the Datagrid table with the new data
@@ -93,6 +93,7 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
   // and enables the Update Form bellow the buttons
   const handleUpdateDepClick = () => {
     setShowUpdateDepartmentInput(!showUpdateDepartmentInput);
+    didExpand(showUpdateDepartmentInput);
   };
 
   // Fills the UpdateDepValues state array with the values that a user gives
@@ -149,6 +150,7 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
   // and enables the Add Form bellow the buttons
   const handleAddDepartmentClick = async () => {
     setShowAddDepartmentInput(!showAddDepartmentInput);
+    didExpand(showAddDepartmentInput);
   };
   // Fills the AddDepValues state array with the values that a user gives
   const handleAddDepValues = (event) => {
