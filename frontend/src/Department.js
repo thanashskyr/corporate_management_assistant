@@ -12,10 +12,13 @@ const Departments = () => {
   const [selectedRow, setSelectedRow] = useState([]);
   const [dataFromChild, setDataFromChild] = useState(null);
 
+  // Is passed (as onData prop) to the child component
+  // which sets the state of dataFromChild in the parrent component.
+  // So data fetched from child component can be accessed from the parrent component.
+
   const handleDataFromChild = (data) => {
     // Handle the data received from the child component
     setDataFromChild(data);
-    console.log(dataFromChild);
   };
 
   // Used to re-render Datagrid when a new dep is submitted

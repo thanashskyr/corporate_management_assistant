@@ -8,6 +8,19 @@ import { useHistory } from "react-router-dom";
 import zIndex from "@mui/material/styles/zIndex";
 
 const Management = ({ onNewDepAdded, selectedRow, onData }) => {
+  // onNewDepAdded is a function passed as prop from the parent component (Department.js)
+  // which makes sure when a new Department is added to inform the parent component and run again
+  // the fetch logic to update the Datagrid table with the new data
+
+  // selectedRows is an array passed as prop from the parent component (Department.js)
+  // which includes the data of the rows from the Datagrid component that have been selected.
+  // This is used for the Update Delete and Show functionalities
+
+  // onData is a callback function passed as prop from the parent component (Department.js)
+  // which allows us to tranfer data from the child component (this one) to the parent component.
+  // It is used so that we can Show the Employees that work in a specific component as a Datagrid table
+  // that is rendered in the parrent component
+
   const [showAddDepartmentInput, setShowAddDepartmentInput] = useState(false);
   const [showUpdateDepartmentInput, setShowUpdateDepartmentInput] =
     useState(false);
@@ -43,10 +56,13 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
 
   const history = useHistory();
 
+  // Is called when the go back button is pressed and returns to Dashboard
   const HandleGoBack = () => {
     history.push("/Dashboard");
   };
 
+  // Is called when the Delete Departments button is called
+  // and deletes one or more departments
   const handleDeleteDep = async () => {
     alert("Department will be deleted!");
 
@@ -73,10 +89,13 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
     setDeleteDisable(true);
   };
 
+  // Runs as soon as a user presses the Update Department button
+  // and enables the Update Form bellow the buttons
   const handleUpdateDepClick = () => {
     setShowUpdateDepartmentInput(!showUpdateDepartmentInput);
   };
 
+  // Fills the UpdateDepValues state array with the values that a user gives
   const handleUpdateDepValues = (event) => {
     const { name, value } = event.target;
     setUpdateDepValues((prevValues) => ({
@@ -85,6 +104,7 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
     }));
   };
 
+  // Runs the update call and handles the various responses from the server
   const handleUpdateDepartment = async () => {
     const new_dep_data = {
       name: UpdateDepValues.name,
@@ -125,10 +145,12 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
     }
   };
 
+  // Runs as soon as a user presses the Add Department button
+  // and enables the Add Form bellow the buttons
   const handleAddDepartmentClick = async () => {
     setShowAddDepartmentInput(!showAddDepartmentInput);
   };
-
+  // Fills the AddDepValues state array with the values that a user gives
   const handleAddDepValues = (event) => {
     const { name, value } = event.target;
     setAddDepValues((prevValues) => ({
@@ -137,6 +159,7 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
     }));
   };
 
+  // Runs the update call and handles the various responses from the server
   const handleAddDepartment = async () => {
     const new_dep_data = {
       name: addDepValues.name,
@@ -176,10 +199,11 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
     }
   };
 
+  // Run the show call, handle the responses
+  // and call onData to send the data to the parrent component
   const handleShowDep = async () => {
     setShowDepartmentField(!showDepartmentField);
     const id = selectedRow[0].id;
-    console.log(id);
 
     try {
       const storedToken = localStorage.getItem("token");
@@ -191,26 +215,18 @@ const Management = ({ onNewDepAdded, selectedRow, onData }) => {
       });
       setShowDepartmentField(!showDepartmentField);
 
-      const jsonempdata = await response.json();
-      console.log(jsonempdata);
-      onData(jsonempdata);
-      //   if (response.status === 200) {
-      //     setShowDepartmentField(!showDepartmentField);
-      //     setUpdateDepValues({ name: "" }); // Clear Textfields when employee is added successfully
-      //     onNewDepAdded();
-      //     //const jsondata = await response.json();
-      //     alert("Department updated successfully");
-      //     //setEmpData(jsondata);
-      //   } else if (response.status === 400) {
-      //     setShowDepartmentField(!showDepartmentField);
-      //     alert("Bad Request");
-      //   } else if (response.status === 422) {
-      //     setShowDepartmentField(!showDepartmentField);
-      //     alert("Department already exists");
-      //   } else {
-      //     alert("Server Error: Department update failed");
-      //     throw new Error("Update departments failed");
-      //   }
+      if (response.status === 200) {
+        const jsonempdata = await response.json();
+        console.log(jsonempdata);
+        onData(jsonempdata); // Send data to Department.js
+      } else if (response.status === 400) {
+        alert("Something went wrong");
+      } else if (response.status === 404) {
+        alert("No employees wokring there yet!");
+      } else {
+        alert("Server Error: Department update failed");
+        throw new Error("Update departments failed");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
