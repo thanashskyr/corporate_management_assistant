@@ -11,7 +11,7 @@ const Departments = () => {
   const [newDepAdded, setNewDepAdded] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
   const [dataFromChild, setDataFromChild] = useState(null);
-  const [managementExpand, setManagementExpand] = useState(false);
+  const [managementExpand, setManagementExpand] = useState(true);
 
   // Is passed (as onData prop) to the child component
   // which sets the state of dataFromChild in the parrent component.
@@ -58,7 +58,7 @@ const Departments = () => {
   }, [newDepAdded]);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: "id", headerName: "ID", width: 150 },
     { field: "name", headerName: "Name", width: 150 },
   ];
 
@@ -73,7 +73,7 @@ const Departments = () => {
     setDataFromChild(null);
     setSelectedRow([]);
   };
-  //305
+
   return (
     <div>
       <NavigationBar />
@@ -106,7 +106,7 @@ const Departments = () => {
           <Button
             variant="contained"
             onClick={handleCloseEmployees}
-            sx={{ margin: "10px" }}
+            sx={{ margin: "1%" }}
           >
             Close
           </Button>
