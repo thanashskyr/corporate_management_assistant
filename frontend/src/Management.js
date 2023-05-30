@@ -381,6 +381,7 @@ const handleGetEmpVat = async () =>{
         right: 0,
         overflow: "hidden",
         backgroundColor: "white",
+        zIndex:1
       }}
     >
        <Typography variant="h4" sx={{ padding: "50px", zIndex: 1 }}>
@@ -396,12 +397,12 @@ const handleGetEmpVat = async () =>{
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Button onClick={handleAddEmployeeClick}>Add Employee</Button>
-          <Button onClick={handleUpdateEmployeeClick} disabled={updateDisable}>Update Employee Info</Button>
-          <Button onClick={handleDeleteEmp} disabled = {deleteDisable} >Delete Employee</Button>
-          <Button onClick={handleSearch}>Search Menu</Button>
+          <Button variant="contained" onClick={handleAddEmployeeClick} sx={{ marginLeft: "10px" }} >Add Employee</Button>
+          <Button variant="contained" onClick={handleUpdateEmployeeClick} disabled={updateDisable} sx={{ marginLeft: "10px" }} >Update Employee Info</Button>
+          <Button variant="contained" onClick={handleDeleteEmp} disabled = {deleteDisable} sx={{ marginLeft: "10px" }} >Delete Employee</Button>
+          <Button variant="contained" onClick={handleSearch} sx={{ marginLeft: "10px" }} >Search Menu</Button>
         </Box>
-        <Button sx={{ marginRight: "10px" }} onClick={HandleGoBack}>
+        <Button sx={{ marginRight: "10px" }} variant="contained" onClick={HandleGoBack}>
           Go Back
         </Button>
       </Toolbar>

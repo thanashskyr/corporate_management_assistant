@@ -105,7 +105,7 @@ const Employees = () => {
               paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[ 10, 20 ]}
           checkboxSelection
           sx={{
             top: managementExpand ? "20px" : "60px",

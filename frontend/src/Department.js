@@ -95,10 +95,10 @@ const Departments = () => {
             columns={empcolumns}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
+                paginationModel: { page: 0, pageSize: 3 },
               },
             }}
-            pageSizeOptions={[5, 10]}
+            pageSizeOptions={[3]}
             sx={{
               backgroundColor: "white",
             }}
@@ -122,7 +122,7 @@ const Departments = () => {
               paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[10 , 15]}
           checkboxSelection
           sx={{
             top: managementExpand ? "20px" : "60px",
