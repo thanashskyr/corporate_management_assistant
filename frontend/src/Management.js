@@ -7,30 +7,43 @@ import Checkbox from "@mui/material/Checkbox";
 import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { useHistory } from "react-router-dom";
+import { Typography } from "@mui/material"; 
 
-const Management = ({onNewEmpAdded, selectedRow}) => {
+const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) => {
+  //show extra textfields onClick useState handlers 
   const [showAddEmployeeInput, setShowAddEmployeeInput] = useState(false);
   const [showSearch, setShowSearch]= useState(false);
+  const [showEmpUpdate, setShowEmpUpdate] = useState(false);
+
   const [allDepartments, setAllDepartments] = useState([]);
   const [selectedDepartments, setSelectedDepartments] = useState([]);
+ 
+  //set the values will be given from the textfields as inputs
   const [addEmpValues, setAddEmpValues] = useState({
     name: "",
     sirname: "",
     vat: "",
   });
+  const [updateEmpValues, setUpdateEmpValues] = useState({
+    name: "",
+    sirname: "",
+    vat: "",
+  }); 
   const [searchValues, setSearchValues] = useState({
     name: "",
     sirname: ""
   });
+  
+  //enable and disable buttons update and delete
   const [updateDisable, setUpdateDisable] = useState(true);
   const [deleteDisable, setDeleteDisable] = useState(true);
+
   const [searchNameDisable, setSearchNameDisable] = useState(true);
   const [searchVatDisable, setSearchVatDisable] = useState(true);
 //   const [showSearchResult, setShowSearchResult] = useState(true);
 
 
   useEffect(() => {
-    //console.log(selectedRow);
     const getName= searchValues.name;
     const getSirname= searchValues.sirname;
     const getVat= searchValues.vat;
@@ -66,8 +79,8 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
 
 
   const handleDeleteEmp = async () =>{
-    alert("Employee will be deleted!");
-    
+    alert("Employee deleted!");
+   
     for (let i=0;  i< selectedRow.length; i++){
         const selectedID=selectedRow[i].id;
             
@@ -91,10 +104,12 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
     setUpdateDisable(true);
 
   }
-
+  
  const handleSearch = async () => {
+  if (!showEmpUpdate&&!showAddEmployeeInput){
+    didExpand(showSearch);
     setShowSearch(!showSearch);
-
+  }
  }
 
 
@@ -102,8 +117,10 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
 
 
   const handleAddEmployeeClick = async () => {
+    if (!showEmpUpdate&&!showSearch){
+    didExpand(showAddEmployeeInput);
     setShowAddEmployeeInput(!showAddEmployeeInput);
-
+    }
     try {
       const storedToken = localStorage.getItem("token");
       const response = await fetch("http://localhost:3000/dep", {
@@ -138,6 +155,39 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
     }
   };
 
+  const handleUpdateEmployeeClick = async () => {
+    
+    if (!showAddEmployeeInput&&!showSearch){
+    setShowEmpUpdate(!showEmpUpdate);
+    didExpand(showEmpUpdate);
+    }
+
+    try {
+      const storedToken = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/dep", {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + storedToken,
+        },
+      });
+
+      if (response.status === 200) {
+        const all_departments = await response.json();
+        setAllDepartments(all_departments);
+      } else {
+        throw new Error("Get Departments Failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  
+
+
+
+
+
   const handleSearchValues = async (event) => {
     const { name, value } = event.target;
     await setSearchValues((prevValues) => ({
@@ -164,9 +214,11 @@ const Management = ({onNewEmpAdded, selectedRow}) => {
       });
       if (response.status === 200) {
         const getEmp = await response.json();
-        console.log(getEmp.employee.id);
+        setSpecificId(getEmp.employee.id);
+       
       } else {
-        alert('employee not found');
+        setSpecificId(0);
+        alert('Employee not found!');
         throw new Error("get employee failed");
         
       }
@@ -188,9 +240,11 @@ const handleGetEmpVat = async () =>{
       });
       if (response.status === 200) {
         const getEmp = await response.json();
-        console.log(getEmp.employee.id);
+        setSpecificId(getEmp.employee.id);
+       
       } else {
-        alert('employee not found');
+        setSpecificId(0);
+        alert('Employee not found!');
         throw new Error("get employee failed");
         
       }
@@ -200,6 +254,65 @@ const handleGetEmpVat = async () =>{
 
 }
    
+
+  const handleUpdateEmpValues = (event) => {
+    const { name, value } = event.target;
+    setUpdateEmpValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+
+  const handleUpdateEmployee = async () => {
+    const update_data = {
+      name: updateEmpValues.name,
+      sirname: updateEmpValues.sirname,
+      vat: updateEmpValues.vat,
+      department_id: selectedDepartments
+    };
+     console.log(update_data);
+     const selectedID=selectedRow[0].id;
+    if (update_data.name&&update_data.sirname&&update_data.vat&&update_data.department_id){
+
+      try{
+        const storedToken = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:3000/emp/${selectedID}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + storedToken,
+          },
+          body: JSON.stringify(update_data),
+        });
+        setShowEmpUpdate(!showEmpUpdate);
+        
+        if (response.status === 200) {
+          setShowEmpUpdate(!showEmpUpdate);
+          setUpdateDisable(!updateDisable);
+          setDeleteDisable(!deleteDisable);
+          setUpdateEmpValues({ name: "", sirname: "", vat: "" }); // Clear Textfields when employee is added successfully
+          onNewEmpAdded();
+          alert("Employee Updated successfully");
+        } else if (response.status === 400) {
+          setShowEmpUpdate(!showEmpUpdate);
+          setUpdateDisable(!updateDisable);
+          alert("Bad Request");
+        } else {
+          alert("Server Error: Update employee failed");
+          throw new Error("Update employe failed");
+        }
+
+      }catch(error) {
+        console.error("Error:", error);
+      }
+    }else{
+      alert("All the fields must have a value");
+    }
+  };
+
+  
+
 
 
 
@@ -233,7 +346,9 @@ const handleGetEmpVat = async () =>{
         body: JSON.stringify(new_emp_data),
       });
       setShowAddEmployeeInput(!showAddEmployeeInput);
-
+      didExpand(!showAddEmployeeInput);
+      setSelectedDepartments([]);
+      
       if (response.status === 200) {
         setShowAddEmployeeInput(!showAddEmployeeInput);
         setAddEmpValues({ name: "", sirname: "", vat: "" }); // Clear Textfields when employee is added successfully
@@ -261,17 +376,20 @@ const handleGetEmpVat = async () =>{
     sx={{
         flexGrow: 1,
         position: "fixed",
-        top: "170px",
+        top: "50px",
         left: 0,
         right: 0,
-        overflow: "hidden"
+        overflow: "hidden",
+        backgroundColor: "white",
       }}
     >
+       <Typography variant="h4" sx={{ padding: "50px", zIndex: 1 }}>
+        Manage Employees
+      </Typography>
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          backgroundColor: "white",
           backgroundColor: showAddEmployeeInput
             ? "rgba(255, 255, 255)"
             : "white",
@@ -279,7 +397,7 @@ const handleGetEmpVat = async () =>{
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button onClick={handleAddEmployeeClick}>Add Employee</Button>
-          <Button disabled = {updateDisable} >Update Employee Info</Button>
+          <Button onClick={handleUpdateEmployeeClick} disabled={updateDisable}>Update Employee Info</Button>
           <Button onClick={handleDeleteEmp} disabled = {deleteDisable} >Delete Employee</Button>
           <Button onClick={handleSearch}>Search Menu</Button>
         </Box>
@@ -350,6 +468,72 @@ const handleGetEmpVat = async () =>{
         </Toolbar>
       )}
       
+
+      {showEmpUpdate && (
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            backgroundColor: "white",
+            transition: "background-color 0.3s ease",
+          }}
+        >
+          <TextField
+            label="Name"
+            sx={{ marginRight: "10px" }}
+            name="name"
+            value={updateEmpValues.name}
+            onChange={handleUpdateEmpValues}
+          />
+          <TextField
+            label="SirName"
+            sx={{ marginRight: "10px" }}
+            name="sirname"
+            value={updateEmpValues.sirname}
+            onChange={handleUpdateEmpValues}
+          />
+          <TextField
+            label="VAT"
+            sx={{ marginRight: "10px" }}
+            name="vat"
+            value={updateEmpValues.vat}
+            onChange={handleUpdateEmpValues}
+          />
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              select
+              label="Select Department(s)"
+              sx={{ minWidth: "200px" }}
+            >
+              {allDepartments.map((department) => (
+                <MenuItem key={department.id} value={department.name}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={selectedDepartments.includes(department.id)}
+                        onChange={handleDepartmentSelect}
+                        value={department.id}
+                      />
+                    }
+                    label={department.name}
+                  />
+                </MenuItem>
+              ))}
+            </TextField>
+            <Button
+              variant="contained"
+              sx={{ marginLeft: "10px" }}
+              onClick={handleUpdateEmployee}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Toolbar>
+      )}
+
+
+
       {showSearch && (
         <Toolbar
           sx={{

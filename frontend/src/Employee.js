@@ -7,17 +7,48 @@ import Management from "./Management";
 import { useHistory } from "react-router-dom";
 import "./theme.css";
 
+
 const Employees = () => {
   const [empData, setEmpData] = useState([]);
   const [newEmpAdded, setNewEmpAdded] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
+  const [specificId, setSpecificId] = useState(0);//takes the value of the searchId generated on child Management.js
+  
+ 
+  const [managementExpand, setManagementExpand] = useState(true);
 
+
+
+
+
+  const handleEmpManagementExpand = (managementExpand) => {
+    setManagementExpand(managementExpand);
+  };
   // Used to re-render Datagrid when a new emp is submitted 
   const handleNewEmpAdded = () => {
     setNewEmpAdded(!newEmpAdded);
   };
 
   const history = useHistory();
+
+ 
+ 
+  let rows = [...empData]; 
+  //if specific id == 0 there wasnt a search so don't change the datagrid
+  if (specificId > 0){
+    // Find the index of the row with the specific Id
+    const specificRowIndex = rows.findIndex((row) => row.id === specificId);
+      //Move the row with the specific ID to the beginning of the array
+      if (specificRowIndex !== -1) {
+      const specificRow = rows.splice(specificRowIndex, 1);
+        rows.unshift(specificRow[0]);
+      }
+  }else{
+    rows = empData;
+  }
+
+
+
 
   useEffect(() => {
     const fetchEmpData = async () => {
@@ -44,6 +75,10 @@ const Employees = () => {
     fetchEmpData();
   }, [newEmpAdded]); // Re render when newEmpAdded state change
 
+
+
+
+
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
     { field: "name", headerName: "Name", width: 150 },
@@ -56,20 +91,14 @@ const Employees = () => {
     <Box sx={{ position: 'relative' , }}>
       <NavigationBar />
       <Box sx={{ position: 'relative', height:"300px"}}>
-      <Management onNewEmpAdded={handleNewEmpAdded} selectedRow={selectedRow}/>
+      <Management onNewEmpAdded={handleNewEmpAdded} selectedRow={selectedRow} setSpecificId={setSpecificId} didExpand={handleEmpManagementExpand}/>
 
       <Box
-        sx={{
-          position: "absolute",
-          top: "100%",
-          left: 20,
-          right: 20,
-          marginTop: "20px", // Adjust the margin as needed
-        }}
+        position="relative" top={305} left={20} marginRight={5}
       >
         <DataGrid
           key={newEmpAdded}
-          rows={empData}
+          rows={rows}
           columns={columns}
           initialState={{
             pagination: {
@@ -78,6 +107,12 @@ const Employees = () => {
           }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          sx={{
+            top: managementExpand ? "20px" : "60px",
+            left: "20",
+            marginRight: "5",
+            backgroundColor: "white",
+          }}
           onRowSelectionModelChange={(newSelection) => {
             console.log(newSelection);
             if (newSelection.length > 0) {

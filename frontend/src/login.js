@@ -35,6 +35,7 @@ const Login = () => {
         if (response.status === 200) {
           return response.json();
         } else {
+          alert("Invalid credentials. Check your username or password")
           throw new Error("Invalid credentials");
         }
       })

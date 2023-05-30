@@ -6,7 +6,9 @@ const pool = require("./db");
 // CREATE
 router.post("/", auth.authenticateToken, async (req, res) => {
   const { name } = req.body;
-
+  if (!name){
+    res.status(400).send("Bad request");
+  }
   const exists = await pool.query(
     "SELECT * FROM department WHERE name = ($1)",
     [name]
@@ -24,7 +26,7 @@ router.post("/", auth.authenticateToken, async (req, res) => {
       res.status(500).send("Server error");
     }
   } else {
-    res.send("department allready exists");
+    res.status(409).send("department allready exists");
   }
 });
 // READ ALL DEPARTMENTS
