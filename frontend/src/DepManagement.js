@@ -131,9 +131,9 @@ const Management = ({ onNewDepAdded, selectedRow, onData, didExpand }) => {
         setShowUpdateDepartmentInput(!showUpdateDepartmentInput);
         setUpdateDepValues({ name: "" }); // Clear Textfields when employee is added successfully
         onNewDepAdded();
-        //const jsondata = await response.json();
+       
         alert("Department updated successfully");
-        //setEmpData(jsondata);
+     
       } else if (response.status === 400) {
         setShowUpdateDepartmentInput(!showUpdateDepartmentInput);
         alert("Bad Request");
@@ -189,9 +189,9 @@ const Management = ({ onNewDepAdded, selectedRow, onData, didExpand }) => {
         setShowAddDepartmentInput(!showAddDepartmentInput);
         setAddDepValues({ name: "" }); // Clear Textfields when employee is added successfully
         onNewDepAdded();
-        //const jsondata = await response.json();
+        
         alert("Department created successfully");
-        //setEmpData(jsondata);
+        
       } else if (response.status === 400) {
         setShowAddDepartmentInput(!showAddDepartmentInput);
         alert("Bad Request");

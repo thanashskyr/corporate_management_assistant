@@ -24,11 +24,14 @@ const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) =>
     sirname: "",
     vat: "",
   });
+
+
   const [updateEmpValues, setUpdateEmpValues] = useState({
-    name: "",
-    sirname: "",
-    vat: "",
+   name:"",
+   sirname:"",
+   vat:""
   }); 
+
   const [searchValues, setSearchValues] = useState({
     name: "",
     sirname: ""
@@ -40,7 +43,7 @@ const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) =>
 
   const [searchNameDisable, setSearchNameDisable] = useState(true);
   const [searchVatDisable, setSearchVatDisable] = useState(true);
-//   const [showSearchResult, setShowSearchResult] = useState(true);
+
 
 
   useEffect(() => {
@@ -69,6 +72,7 @@ const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) =>
         setUpdateDisable(true);
         setDeleteDisable(true); 
     }
+    
   }, [selectedRow,searchValues]);
 
   const history = useHistory();
@@ -145,7 +149,7 @@ const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) =>
     const departmentId = parseInt(event.target.value);
     setSelectedDepartments([...selectedDepartments, departmentId]);
     const isChecked = event.target.checked;
-
+    
     if (isChecked) {
       setSelectedDepartments([...selectedDepartments, departmentId]);
     } else {
@@ -156,7 +160,13 @@ const Management = ({onNewEmpAdded, selectedRow , setSpecificId , didExpand}) =>
   };
 
   const handleUpdateEmployeeClick = async () => {
-    
+    setUpdateEmpValues({
+      name: selectedRow[0].name,
+      sirname: selectedRow[0].sirname,
+      vat: selectedRow[0].vat,
+      department_id: selectedRow[0].departments
+     })
+ 
     if (!showAddEmployeeInput&&!showSearch){
     setShowEmpUpdate(!showEmpUpdate);
     didExpand(showEmpUpdate);
@@ -256,6 +266,7 @@ const handleGetEmpVat = async () =>{
    
 
   const handleUpdateEmpValues = (event) => {
+   
     const { name, value } = event.target;
     setUpdateEmpValues((prevValues) => ({
       ...prevValues,
@@ -353,9 +364,9 @@ const handleGetEmpVat = async () =>{
         setShowAddEmployeeInput(!showAddEmployeeInput);
         setAddEmpValues({ name: "", sirname: "", vat: "" }); // Clear Textfields when employee is added successfully
         onNewEmpAdded();
-        //const jsondata = await response.json();
+        
         alert("Employee created successfully");
-        //setEmpData(jsondata);
+     
       } else if (response.status === 400) {
         setShowAddEmployeeInput(!showAddEmployeeInput);
         alert("Bad Request");
@@ -512,7 +523,11 @@ const handleGetEmpVat = async () =>{
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={selectedDepartments.includes(department.id)}
+                      checked={
+                        selectedDepartments.includes(department.id) //checks the new departments clicked now
+                        //||updateEmpValues.department_id.includes(department.name)//checks the departments already employee belong to
+                      }
+                      
                         onChange={handleDepartmentSelect}
                         value={department.id}
                       />
