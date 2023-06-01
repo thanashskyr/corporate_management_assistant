@@ -6,7 +6,6 @@ import cmaLogo from "./cmaLogoNoBG.png";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [token, setToken]= useState('');
   const history = useHistory();
 
   const handleUsernameChange = (event) => {
@@ -45,10 +44,8 @@ const Login = () => {
           localStorage.setItem("token", receivedToken);
           const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; //after 24 hours
           localStorage.setItem("expirationTime", expirationTime.toString());
-
-          // setToken(receivedToken);
-
           const storedToken = localStorage.getItem("token");
+
           console.log("Token:", storedToken);
           console.log("Response:", data.message);
           if (data.token) {

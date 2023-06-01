@@ -49,9 +49,6 @@ router.get("/:id/emp", auth.authenticateToken, async (req, res) => {
       [id]
     );
 
-    // const result = await pool.query("SELECT * FROM department WHERE id = " + id);
-    // const join_result= await pool.query("SELECT employee_id FROM employee_department WHERE department_id = " + id);
-
     if (result.rows.length === 0) {
       res.status(404).send("Department with this id not found");
     } else {

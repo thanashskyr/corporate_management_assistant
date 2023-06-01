@@ -50,7 +50,6 @@ router.get("/", auth.authenticateToken, async (req, res) => {
     JOIN department AS d ON ed.department_id = d.id
     GROUP BY e.id, e.name
   `);
-    //const departments= await pool.query("SELECT d.name , d.id FROM department d JOIN employee_department ed ON d.id = ed.department_id JOIN employee e ON e.id = ed.employee_id WHERE e.name = $1 AND e.sirname = $2 ", [ name , sirname ]);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
