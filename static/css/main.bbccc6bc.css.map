@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.bbccc6bc.css","mappings":"AAAA,iBAGE,4BAA6B,CAF7B,mEAAwC,CACxC,wBAAyB,CAEzB,YACF","sources":["theme.css"],"sourcesContent":[".body-background {\r\n  background-image: url(\"/src/backgr.jpg\");\r\n  background-repeat: repeat;\r\n  background-attachment: scroll;\r\n  height: 170vh;\r\n}\r\n"],"names":[],"sourceRoot":""}
